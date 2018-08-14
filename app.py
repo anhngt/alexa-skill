@@ -1,31 +1,32 @@
-#!/usr/bin/env python
+# !flask/bin/python
+from flask import Flask, jsonify
 
-import asyncio
-import os
+app = Flask(__name__)
+from flask import Flask
+from flask import request
 
-import websockets
+app = Flask(__name__)
 
-
-@asyncio.coroutine
-async def ws_handler(websocket, path):
-    name = await websocket.recv()
-    print(f"< {name}")
-
-    greeting = f"Hello {name}!"
-
-    response = '\r\n'.join([
-        'HTTP/1.1 200 OK',
-        'Content-Type: text/json',
-        '',
-        '' + '{"version":"1.0","sessionAttributes":{},"response":{"outputSpeech":{"type":"PlainText","text":"There are 3 atm"},"shouldEndSession":true}}' + '',
-    ])
-
-    await websocket.send(response)
-    print(f"> {response}")
+response = {
+    'version': '1.0',
+    'sessionAttributes': {},
+    'response': {
+        'outputSpeech': {
+            'type': 'PlainText',
+            'text': 'There are 3 atm'
+        },
+        'shouldEndSession': True
+    }
+}
 
 
-port = int(os.getenv('PORT', 8765))  # 8765
-start_server = websockets.serve(ws_handler, '', port)
+@app.route('/', methods=['POST'])
+def post():
+    print(request.is_json)
+    content = request.get_json()
+    print(content)
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+    return jsonify(response)
+
+
+app.run(host='0.0.0.0', port=5000)
