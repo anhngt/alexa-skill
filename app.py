@@ -16,7 +16,7 @@ async def ws_handler(websocket, path):
     print(f"> {greeting}")
 
 
-port = int(os.getenv('PORT', 8765))  # 8765
+port = int(os.getenv('PORT', 80))# 8765
 start_server = websockets.serve(ws_handler, '', port)
 
 asyncio.get_event_loop().run_until_complete(start_server)
